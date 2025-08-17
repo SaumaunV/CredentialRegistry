@@ -36,6 +36,9 @@ contract CredentialRegistry is Ownable {
 
     event CredentialRevoked(uint256 indexed credentialId, address indexed revoker);
 
+    event IssuerAdded(address indexed issuer);
+    event IssuerRemoved(address indexed issuer);
+
     // --- Modifiers ---
     modifier onlyIssuer() {
         require(authorizedIssuers[msg.sender], "Caller is not an authorized issuer");
@@ -50,10 +53,12 @@ contract CredentialRegistry is Ownable {
     // --- Issuer Management Functions ---
     function addIssuer(address issuer) external onlyOwner {
         authorizedIssuers[issuer] = true;
+	emit IssuerAdded(issuer);
     }
 
     function removeIssuer(address issuer) external onlyOwner {
         authorizedIssuers[issuer] = false;
+	emit IssuerRemoved(issuer);
     }
 
     // --- Core Functions ---

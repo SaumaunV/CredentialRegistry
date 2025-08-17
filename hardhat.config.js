@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-foundry");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -7,7 +8,7 @@ paths: {
   },
         networks: {
                 localhost: {
-                        url: "http://ec2-18-224-22-36.us-east-2.compute.amazonaws.com:8545"
+                        url: "http://ec2-18-220-39-204.us-east-2.compute.amazonaws.com:8545"
             ,           chainID: 1337
 
                 }
