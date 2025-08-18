@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract CredentialRegistry is Ownable {
     
     uint256 private _credentialIdCounter;
+
+    enum Status { Valid, Revoked }
     
     // --- Structs ---
     struct Credential {
@@ -13,7 +15,8 @@ contract CredentialRegistry is Ownable {
         address issuedTo;
         address issuedBy;
         uint256 issuedAt;
-        bool isValid;
+	Status status;
+	string revocationReason;
     }
 
     // --- Mappings ---
@@ -34,7 +37,7 @@ contract CredentialRegistry is Ownable {
         string credentialType
     );
 
-    event CredentialRevoked(uint256 indexed credentialId, address indexed revoker);
+    event CredentialRevoked(uint256 indexed credentialId, address indexed revoker, string reason);
 
     event IssuerAdded(address indexed issuer);
     event IssuerRemoved(address indexed issuer);
@@ -75,7 +78,8 @@ contract CredentialRegistry is Ownable {
             issuedTo: recipient,
             issuedBy: msg.sender,
             issuedAt: block.timestamp,
-            isValid: true
+            status: Status.Valid,
+	    revocationReason: ""
         });
 
         // Associate the new credential ID with the recipient's wallet address
@@ -93,10 +97,16 @@ contract CredentialRegistry is Ownable {
         return newCredentialId;
     }
 
-    function revokeCredential(uint256 credentialId) external onlyIssuer {
+    function revokeCredential(uint256 credentialId, string memory reason) external onlyIssuer {
         require(credentials[credentialId].issuedAt != 0, "Credential does not exist.");
-        credentials[credentialId].isValid = false;
-        emit CredentialRevoked(credentialId, msg.sender);
+	require(credentials[credentialId].status == Status.Valid, "Credential already revoked.");
+
+	require(msg.sender == credentials[credentialId].issuedBy, "Only the original issuer can revoke this credential.");
+
+        credentials[credentialId].status = Status.Revoked;
+	credentials[credentialId].revocationReason = reason;
+
+        emit CredentialRevoked(credentialId, msg.sender, reason);
     }
 
     // --- View Functions ---
