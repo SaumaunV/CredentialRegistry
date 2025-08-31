@@ -1,0 +1,36 @@
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+NODE_MAJOR=22
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+sudo apt-get update
+sudo apt-get install nodejs -y
+npm install web3
+npm install --save-dev @nomiclabs/hardhat-ethers ethers @nomiclabs/hardhat-waffle ethereum-waffle chai
+npm i @openzeppelin/contracts@4.5.0
+
+npx create-react-app credentials
+cd credentials
+
+npx hardhat init
+
+vi hardhat.config.js
+
+cd contracts
+rm Lock.sol
+vi Credentials.sol
+
+vi src/App.js
+
+mkdir scripts       
+vi scripts/deploy.js
+
+npx hardhat node --hostname <dns>
+npx hardhat run scripts/deploy.js --network localhost
+npm start
+
+forge test
+npx hardhat test
+
+
